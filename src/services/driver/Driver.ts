@@ -1,7 +1,14 @@
-import fs from 'fs';
-import isEmpty from '../../utils/isEmpty';
-import DatabaseError from './DatabaseError';
-import { DatabaseEntry, DatabaseOperatorObject, DatabaseQuery, DatabaseFindResponse } from './Types';
+import fs from "fs";
+import isEmpty from "../../utils/isEmpty";
+import DatabaseError from "./DatabaseError";
+import {
+  DatabaseEntry,
+  DatabaseOperatorObject,
+  DatabaseQuery,
+  DatabaseFindResponse,
+  DatabaseInsertResponse,
+  DatabaseSchema,
+} from "./Types";
 
 class Driver {
   private rootFolder: string;
@@ -9,77 +16,96 @@ class Driver {
 
   constructor(folderName: string) {
     this.rootFolder = folderName;
-    this.validOperators = ['$gt', '$gte', '$lt', '$lte'];
+    this.validOperators = ["$gt", "$gte", "$lt", "$lte"];
   }
 
-  public find(query: DatabaseQuery, databaseName: string, onlyOne: boolean = false): DatabaseFindResponse {
-    if(isEmpty(query)) return { result: [], error: null };
-    if(!fs.existsSync(`${this.rootFolder}/${databaseName}`)) return { result: [], error: new DatabaseError(`Not found. There is no table with the name: ${databaseName}.`) };
+  public find(
+    query: DatabaseQuery,
+    databaseName: string,
+    onlyOne: boolean = false
+  ): DatabaseFindResponse {
+    if (isEmpty(query)) return { result: [], error: null };
+    if (!fs.existsSync(`${this.rootFolder}/${databaseName}`))
+      return {
+        result: [],
+        error: new DatabaseError(
+          `Not found. There is no table with the name: ${databaseName}.`
+        ),
+      };
 
     let fileNames: string[] = fs.readdirSync(
       `${this.rootFolder}/${databaseName}`
     );
 
-    let schema: {[key: string]: string | number | boolean } = JSON.parse(
+    let schema: { [key: string]: string | number | boolean } = JSON.parse(
       fs.readFileSync(`${this.rootFolder}/${databaseName}/schema.json`, {
-        encoding: 'utf-8'
+        encoding: "utf-8",
       })
     );
 
     let [validQuery, invalidKey] = this.checkQuery(schema, query);
-    if(!validQuery) return { result: [], error: new DatabaseError(`Unknown key. ${invalidKey} does not exist in the schema of ${databaseName}.`) };
+    if (!validQuery)
+      return {
+        result: [],
+        error: new DatabaseError(
+          `Unknown key. ${invalidKey} does not exist in the schema of ${databaseName}.`
+        ),
+      };
 
-    let indexOfSchema: number = fileNames.indexOf('schema.json');
+    let indexOfSchema: number = fileNames.indexOf("schema.json");
     fileNames.splice(indexOfSchema, 1);
 
     let matches: DatabaseEntry[] = [];
-    for(let i: number = 0; i < fileNames.length; i++) {
+    for (let i: number = 0; i < fileNames.length; i++) {
       let fileName = fileNames[i];
       let entry: DatabaseEntry = JSON.parse(
-        fs.readFileSync(`${this.rootFolder}/${databaseName}/${fileName}`, { encoding: 'utf-8' })
+        fs.readFileSync(`${this.rootFolder}/${databaseName}/${fileName}`, {
+          encoding: "utf-8",
+        })
       );
-      
+
       let match: boolean = this.compare(entry, query);
-      if(match) {
+      if (match) {
         matches.push(entry);
-        if(onlyOne) return { result: matches, error: null };
+        if (onlyOne) return { result: matches, error: null };
       }
     }
 
     return {
       result: matches,
-      error: null
+      error: null,
     };
   }
 
   private compare(entry: DatabaseEntry, query: DatabaseQuery): boolean {
     let queryKeys: string[] = Object.keys(query);
 
-    for(let i: number; i < queryKeys.length; i++) {
+    for (let i: number; i < queryKeys.length; i++) {
       let currentKey: string = queryKeys[i];
-      if(typeof query[currentKey] !== 'object') {
-        if(query[currentKey] !== entry[currentKey]) return false;
+      if (typeof query[currentKey] !== "object") {
+        if (query[currentKey] !== entry[currentKey]) return false;
       } else {
         // @ts-ignore
         let operatorObject: DatabaseOperatorObject = query[currentKey];
-        if(this.checkOperators(operatorObject)) return false;
+        if (this.checkOperators(operatorObject)) return false;
 
         let operatorNames: string[] = Object.keys(operatorObject);
-        for(let j: number = 0; j < operatorNames.length; j++) {
+        for (let j: number = 0; j < operatorNames.length; j++) {
           let operatorName: string = operatorNames[i];
-          let operationValue: string | number | boolean = operatorObject[operatorName];
+          let operationValue: string | number | boolean =
+            operatorObject[operatorName];
 
-          switch(operatorName) {
-            case '$gt':
+          switch (operatorName) {
+            case "$gt":
               if (!(entry[currentKey] > operationValue)) return false;
               break;
-            case '$gte':
+            case "$gte":
               if (!(entry[currentKey] >= operationValue)) return false;
               break;
-            case '$lt':
+            case "$lt":
               if (!(entry[currentKey] < operationValue)) return false;
               break;
-            case '$lte':
+            case "$lte":
               if (!(entry[currentKey] <= operationValue)) return false;
               break;
           }
@@ -89,24 +115,117 @@ class Driver {
     return true;
   }
 
-  public checkQuery(schema: {[key: string]: string | number | boolean }, query: DatabaseQuery): [boolean, string] {
+  public checkQuery(
+    schema: { [key: string]: string | number | boolean },
+    query: DatabaseQuery
+  ): [boolean, string] {
     let validKeys: string[] = Object.keys(schema);
     let givenKeys: string[] = Object.keys(query);
 
-    for(let i: number = 0; i < givenKeys.length; i++) {
-      if(validKeys.indexOf(givenKeys[i]) === -1) return [false, givenKeys[i]];
+    for (let i: number = 0; i < givenKeys.length; i++) {
+      if (validKeys.indexOf(givenKeys[i]) === -1) return [false, givenKeys[i]];
     }
 
-    return [true, '']
+    return [true, ""];
   }
 
   public checkOperators(operatorObject: DatabaseOperatorObject): boolean {
     let operatorNames: string[] = Object.keys(operatorObject);
-    for(let i: number = 0; i < operatorNames.length; i++) {
-      if(this.validOperators.indexOf(operatorNames[i]) === -1) return false;
+    for (let i: number = 0; i < operatorNames.length; i++) {
+      if (this.validOperators.indexOf(operatorNames[i]) === -1) return false;
     }
     return true;
   }
-};
+
+  public insert(
+    data: DatabaseEntry,
+    databaseName: string
+  ): DatabaseInsertResponse {
+    let schema: DatabaseSchema = JSON.parse(
+      fs.readFileSync(`${this.rootFolder}/${databaseName}/schema.json`, {
+        encoding: "utf-8",
+      })
+    );
+
+    let dataKeys: string[] = Object.keys(data);
+    let schemaKeys: string[] = Object.keys(schema);
+
+    for (let i: number = 0; i < dataKeys.length; i++) {
+      let currentKey: string = dataKeys[i];
+      if (schemaKeys.indexOf(currentKey) === -1)
+        return {
+          success: false,
+          error: new DatabaseError(
+            `Unknown key. ${currentKey} does not exist in the schema of ${databaseName}`
+          ),
+        };
+      if (typeof data[currentKey] !== schema[currentKey].type)
+        return {
+          success: false,
+          error: new DatabaseError(
+            `Type error. Expected ${
+              schema[currentKey].type
+            } for ${currentKey} got ${typeof data[currentKey]} instead.`
+          ),
+        };
+      if (schema[currentKey].unique === "true") {
+        let query: any = {};
+        query[currentKey] = data[currentKey];
+        let { result } = this.find(query, databaseName, true);
+
+        if (result.length >= 1)
+          return {
+            success: false,
+            error: new DatabaseError(
+              `Insertion prevented. ${currentKey} was specified to be unique. Found entry with same value in the document with the id: ${result[0].id}.`
+            ),
+          };
+      }
+    }
+
+    let entries: string[] = fs.readdirSync(
+      `${this.rootFolder}/${databaseName}`
+    );
+    let objectId: string = `_${Date.now()}${entries.length}`;
+
+    data["_id"] = objectId;
+
+    dataKeys = Object.keys(data);
+
+    let missingKeys: string[] = [];
+    for (let i: number = 0; i < schemaKeys.length; i++) {
+      let currentKey: string = schemaKeys[i];
+      if (dataKeys.indexOf(currentKey) === -1) {
+        missingKeys.push(currentKey);
+      }
+    }
+
+    missingKeys.forEach((key) => {
+      if ("default" in schema[key]) {
+        data[key] = schema[key].default;
+      } else {
+        let type = schema[key].type;
+        switch (type) {
+          case "string":
+            data[key] = "";
+            break;
+          case "number":
+            data[key] = 0;
+            break;
+          case "boolean":
+            data[key] = true;
+            break;
+        }
+      }
+    });
+
+    fs.writeFileSync(
+      `${this.rootFolder}/${databaseName}/${objectId}.json`,
+      JSON.stringify(data)
+    );
+
+    return { success: true, error: null };
+  }
+}
 
 export default Driver;

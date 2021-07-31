@@ -1,5 +1,5 @@
-import express, { Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
+import express, { Express, Request, Response } from "express";
+import dotenv from "dotenv";
 dotenv.config();
 
 const run = (): void => {

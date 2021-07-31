@@ -10,6 +10,6 @@ class DatabaseError {
   toString() {
     return JSON.stringify(this);
   }
-};
+}
 
 export default DatabaseError;
