@@ -6,11 +6,22 @@
   "author": "Sean Meyer",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "dev": "nodemon index.ts",
+    "start": "ts-node index.ts",
+    "beautify": "npx prettier --write ."
+  },
   "devDependencies": {
+    "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
     "@types/node": "^16.4.8",
     "nodemon": "^2.0.12",
+    "prettier": "^2.3.2",
     "ts-node": "^10.1.0",
     "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1"
   }
 }
