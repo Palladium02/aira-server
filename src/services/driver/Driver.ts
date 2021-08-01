@@ -309,6 +309,25 @@ class Driver {
     });
     return tables;
   }
+
+  public getSizeOfAllTables(username: string): number {
+    let tables: string[] = this.getTableNames(username);
+    let accumulatedSize: number = 0;
+
+    tables.forEach(table => {
+      let files: string[] = fs.readdirSync(`${this.rootFolder}/${username}/${table}`);
+      files = files.filter((value) => {
+        if(value !== 'schema.json') return value;
+      });
+      
+      files.forEach(file => {
+        let size: number = fs.statSync(`${this.rootFolder}/${username}/${table}/${file}`).size;
+        accumulatedSize = accumulatedSize + size;
+      });
+    });
+
+    return accumulatedSize;
+  }
 }
 
 export default Driver;
