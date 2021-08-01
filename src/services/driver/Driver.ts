@@ -8,6 +8,7 @@ import {
   DatabaseFindResponse,
   DatabaseInsertResponse,
   DatabaseSchema,
+  DatabaseUpdateResponse,
 } from "./Types";
 
 class Driver {
@@ -116,7 +117,7 @@ class Driver {
   }
 
   public checkQuery(
-    schema: { [key: string]: string | number | boolean },
+    schema: DatabaseSchema | DatabaseQuery,
     query: DatabaseQuery
   ): [boolean, string] {
     let validKeys: string[] = Object.keys(schema);
@@ -225,6 +226,53 @@ class Driver {
     );
 
     return { success: true, error: null };
+  }
+
+  public update(query: DatabaseQuery, update: DatabaseEntry, databaseName: string): DatabaseUpdateResponse {
+    if(isEmpty(query)) return { success: true, error: null };
+    
+    let schema: DatabaseSchema = JSON.parse(
+      fs.readFileSync(`${this.rootFolder}/${databaseName}/schema.json`, {
+        encoding: 'utf-8',
+      })
+    );
+
+    let { result, error } = this.find(query, databaseName, true);
+    if(error) return { success: false, error: error };
+
+    let match = result[0];
+    if(!match)
+      return {
+        success: false,
+        error: new DatabaseError(
+          `No match found. There is no entry matching the query therefore no update was performed.`
+        ),
+      };
+    let [validUpdate, invalidKey] = this.checkQuery(schema, update);
+
+    let objectId: string | number | boolean = result[0]['_id'];
+
+    if(validUpdate) {
+      let updateKeys: string[] = Object.keys(update);
+      let currentKey: string;
+      for (let i: number = 0; i < updateKeys.length; i++) {
+        currentKey = updateKeys[i];
+        if (currentKey !== '_id') match[currentKey] = update[currentKey];
+      }
+
+      fs.writeFileSync(
+        `${this.rootFolder}/${databaseName}/${objectId}.json`,
+        JSON.stringify(match)
+      );
+      return { success: true, error: null };
+    } else {
+      return {
+        success: false,
+        error: new DatabaseError(
+          `Unknown key. ${invalidKey} does not exist in the schema of ${databaseName}`
+        ),
+      };
+    }
   }
 }
 

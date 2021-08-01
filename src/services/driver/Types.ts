@@ -14,6 +14,11 @@ export interface DatabaseInsertResponse {
   error: DatabaseError | null;
 }
 
+export interface DatabaseUpdateResponse {
+  success: boolean,
+  error: DatabaseError | null;
+}
+
 export interface DatabaseOperatorObject {
   [key: string]: string | number | boolean;
 }
