@@ -301,6 +301,14 @@ class Driver {
       return { success: false, error: new DatabaseError(`Table not found. There is no table named ${tableName} in the database.`) }
     }
   }
+
+  public getTableNames(username: string): string[] {
+    let tables: string[] = fs.readdirSync(`${this.rootFolder}/${username}`);
+    tables = tables.filter((value) => {
+      if(value !== 'meta.json') return value; 
+    });
+    return tables;
+  }
 }
 
 export default Driver;
