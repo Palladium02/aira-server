@@ -47,6 +47,8 @@ The schmema.json lives in the same directory as the other files of a table so ne
 the fileNames array. Now the fileNames array only contains the names of entries.
 For each filename the compare method is called. When Driver.compare returns true the entry is added to the
 matches. Finally a DatabaseResponse is returned.
+The compare method is called for each file seperatly as each entry is a single file. With this approach
+a little bit of performance is sacrificed for better memory usage.
 
 #### compare (private)
 
@@ -91,6 +93,7 @@ A guard clause prevents an override of the object id. Lastly the updated entry i
 #### deleteEntry (public)
 
 |name|type|default|
+|---|---|---|
 |query|DatabaseQuery|no default|
 |databaseName|string|no default|
 
@@ -102,6 +105,24 @@ A method to delete an entry based on a query. If a matching entry is found that 
 |tableName|string| no default|
 
 If a table with the given name exists that specific table will be deleted.
+
+
+#### getTableNames (public)
+
+|name|type|default|
+|---|---|---|
+|username|string|no default|
+
+This method takes the names of all tables in the users database. It removes meta.json from the list as fs.readdirSync returns every
+entry from a folder.
+
+#### getSizeOfAllTables (public)
+
+|name|type|default|
+|---|---|---|
+|username|string|no default|
+
+This methods sums up the sizes of all folders/tables in the users database.
 
 #### checkQuery (public)
 
