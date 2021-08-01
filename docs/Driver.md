@@ -62,6 +62,32 @@ In the following process the method loops over the keys in the DatabaseOperatorO
 made according to the keys in the DatabaseOperatorObject. If a comparisons fails false is returned else nothing happens until the
 method finishes. In the end true is returned hence all comparisons worked out and the entry is a match.
 
+#### insert (public)
+
+|name|type|default|
+|---|---|---|
+|query|DatabaseQuery|no default|
+|update|DatabaseEntry|no default|
+|databaseName|string|no default|
+
+The insert method is responsible to create a new entry in the database. Firstly the query and the update are
+checked if they are valid. If not the method exits and returns a DatabaseInsertResponse with a DatabaseError object.
+When both query and update are valid an object id is generated. If the update object misses any fields that had been
+specified in the schema then these fields will be filled with default values that either are specified in the schema file
+or are the general defaults for the type of the affected field.
+
+#### update (public)
+
+|name|type|default|
+|---|---|---|
+|query|DatabaseQuery|no default|
+|update|DatabaseEntry|no default|
+|databaseName|string|no default|
+
+This method updates a specific entry in the database. The method exits if there is no entry that matches the query.
+Then the update object is checked if it is valid else the method also exits. The next step is to update the fields of the entry.
+A guard clause prevents an override of the object id. Lastly the updated entry is written to the database.
+
 #### checkQuery (public)
 
 |name|type|default|
