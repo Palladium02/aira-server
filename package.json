@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "nodemon index.ts",
     "start": "ts-node index.ts",
-    "beautify": "npx prettier --write ."
+    "beautify": "npx prettier --write .",
+    "test:driver": "ts-node ./__tests__/Driver.ts"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
