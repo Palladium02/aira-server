@@ -9,6 +9,7 @@ import {
   DatabaseInsertResponse,
   DatabaseSchema,
   DatabaseUpdateResponse,
+  DatabaseDeleteEntryResponse,
 } from "./Types";
 
 class Driver {
@@ -228,20 +229,24 @@ class Driver {
     return { success: true, error: null };
   }
 
-  public update(query: DatabaseQuery, update: DatabaseEntry, databaseName: string): DatabaseUpdateResponse {
-    if(isEmpty(query)) return { success: true, error: null };
-    
+  public update(
+    query: DatabaseQuery,
+    update: DatabaseEntry,
+    databaseName: string
+  ): DatabaseUpdateResponse {
+    if (isEmpty(query)) return { success: true, error: null };
+
     let schema: DatabaseSchema = JSON.parse(
       fs.readFileSync(`${this.rootFolder}/${databaseName}/schema.json`, {
-        encoding: 'utf-8',
+        encoding: "utf-8",
       })
     );
 
     let { result, error } = this.find(query, databaseName, true);
-    if(error) return { success: false, error: error };
+    if (error) return { success: false, error: error };
 
     let match = result[0];
-    if(!match)
+    if (!match)
       return {
         success: false,
         error: new DatabaseError(
@@ -250,14 +255,14 @@ class Driver {
       };
     let [validUpdate, invalidKey] = this.checkQuery(schema, update);
 
-    let objectId: string | number | boolean = result[0]['_id'];
+    let objectId: string | number | boolean = result[0]["_id"];
 
-    if(validUpdate) {
+    if (validUpdate) {
       let updateKeys: string[] = Object.keys(update);
       let currentKey: string;
       for (let i: number = 0; i < updateKeys.length; i++) {
         currentKey = updateKeys[i];
-        if (currentKey !== '_id') match[currentKey] = update[currentKey];
+        if (currentKey !== "_id") match[currentKey] = update[currentKey];
       }
 
       fs.writeFileSync(
@@ -273,6 +278,18 @@ class Driver {
         ),
       };
     }
+  }
+
+  public deleteEntry(
+    query: DatabaseQuery,
+    databaseName: string
+  ): DatabaseDeleteEntryResponse {
+    let { result, error } = this.find(query, databaseName, true);
+    if (error) return { success: false, error: error };
+    if (!isEmpty(result)) {
+      fs.unlinkSync(`${this.rootFolder}/${databaseName}/${result[0]._id}.json`);
+    }
+    return { success: true, error: null };
   }
 }
 

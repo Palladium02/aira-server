@@ -15,7 +15,12 @@ export interface DatabaseInsertResponse {
 }
 
 export interface DatabaseUpdateResponse {
-  success: boolean,
+  success: boolean;
+  error: DatabaseError | null;
+}
+
+export interface DatabaseDeleteEntryResponse {
+  success: boolean;
   error: DatabaseError | null;
 }
 
