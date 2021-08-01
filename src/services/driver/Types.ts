@@ -9,20 +9,18 @@ export interface DatabaseFindResponse {
   error: DatabaseError | null;
 }
 
-export interface DatabaseInsertResponse {
+export interface DatabaseBaseResponse {
   success: boolean;
   error: DatabaseError | null;
 }
 
-export interface DatabaseUpdateResponse {
-  success: boolean;
-  error: DatabaseError | null;
-}
+export interface DatabaseInsertResponse extends DatabaseBaseResponse {}
 
-export interface DatabaseDeleteEntryResponse {
-  success: boolean;
-  error: DatabaseError | null;
-}
+export interface DatabaseUpdateResponse extends DatabaseBaseResponse {}
+
+export interface DatabaseDeleteEntryResponse extends DatabaseBaseResponse {}
+
+export interface DatabaseDropTableResponse extends DatabaseBaseResponse {}
 
 export interface DatabaseOperatorObject {
   [key: string]: string | number | boolean;

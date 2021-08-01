@@ -10,6 +10,7 @@ import {
   DatabaseSchema,
   DatabaseUpdateResponse,
   DatabaseDeleteEntryResponse,
+  DatabaseDropTableResponse,
 } from "./Types";
 
 class Driver {
@@ -290,6 +291,15 @@ class Driver {
       fs.unlinkSync(`${this.rootFolder}/${databaseName}/${result[0]._id}.json`);
     }
     return { success: true, error: null };
+  }
+
+  public dropTable(tableName: string): DatabaseDropTableResponse {
+    if(fs.existsSync(`${this.rootFolder}/${tableName}`)) {
+      fs.rmdirSync(`${this.rootFolder}/${tableName}`);
+      return { success: true, error: null };
+    } else {
+      return { success: false, error: new DatabaseError(`Table not found. There is no table named ${tableName} in the database.`) }
+    }
   }
 }
 
