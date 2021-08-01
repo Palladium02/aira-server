@@ -88,6 +88,21 @@ This method updates a specific entry in the database. The method exits if there 
 Then the update object is checked if it is valid else the method also exits. The next step is to update the fields of the entry.
 A guard clause prevents an override of the object id. Lastly the updated entry is written to the database.
 
+#### deleteEntry (public)
+
+|name|type|default|
+|query|DatabaseQuery|no default|
+|databaseName|string|no default|
+
+A method to delete an entry based on a query. If a matching entry is found that entry is deleted else the method exits with a DatabaseError.
+
+#### dropTable (public)
+
+|name|type|default|
+|tableName|string| no default|
+
+If a table with the given name exists that specific table will be deleted.
+
 #### checkQuery (public)
 
 |name|type|default|
