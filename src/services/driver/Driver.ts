@@ -80,7 +80,7 @@ class Driver {
   private compare(entry: DatabaseEntry, query: DatabaseQuery): boolean {
     let queryKeys: string[] = Object.keys(query);
 
-    for (let i: number; i < queryKeys.length; i++) {
+    for (let i: number = 0; i < queryKeys.length; i++) {
       let currentKey: string = queryKeys[i];
       if (typeof query[currentKey] !== "object") {
         if (query[currentKey] !== entry[currentKey]) return false;
@@ -93,7 +93,7 @@ class Driver {
         for (let j: number = 0; j < operatorNames.length; j++) {
           let operatorName: string = operatorNames[i];
           let operationValue: string | number | boolean =
-            operatorObject[operatorName];
+            operatorObject[operatorName]!;
 
           switch (operatorName) {
             case "$gt":
@@ -202,7 +202,7 @@ class Driver {
 
     missingKeys.forEach((key) => {
       if ("default" in schema[key]) {
-        data[key] = schema[key].default;
+        data[key] = schema[key].default!;
       } else {
         let type = schema[key].type;
         switch (type) {

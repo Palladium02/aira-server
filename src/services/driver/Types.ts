@@ -15,10 +15,7 @@ export interface DatabaseInsertResponse {
 }
 
 export interface DatabaseOperatorObject {
-  $gt?: string | number | boolean;
-  $gte?: string | number | boolean;
-  $lt?: string | number | boolean;
-  $lte?: string | number | boolean;
+  [key: string]: string | number | boolean;
 }
 
 export interface DatabaseQuery {
