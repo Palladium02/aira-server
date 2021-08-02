@@ -46,6 +46,18 @@ class Authentication {
     }
     return { id: null, error: { description: '', date: Date.now() } };
   }
+
+  public logout(id: string): void {
+    this.sessions.delete(id);
+  }
+
+  public isValidId(id: string): boolean {
+    return this.sessions.has(id);
+  }
+
+  public getSession(id: string): Session {
+    return this.sessions.get(id);
+  }
 }
 
 const authentication: Authentication = new Authentication(process.env.ROOT_DIR!, 'aira/user');
