@@ -4,8 +4,8 @@ import authentication from '../services/auth/Authentication';
 interface authGuardOptions {
   req: Request,
   res: Response,
-  accepted: (req: Request, res: Response) => {},
-  declined: (req: Request, res: Response) => {};
+  accepted: (req: Request, res: Response) => void,
+  declined: (req: Request, res: Response) => void;
 }
 
 const authGuard = ({ req, res, accepted, declined }: authGuardOptions) => {
