@@ -37,3 +37,24 @@ needed. It can create, delete and verify sessions.
 This method is used to create a session when a user tries to login.
 First the database is queried to check if the user exists. Then the credentials
 checked. If everything goes fine a session is created.
+
+#### logout (public)
+
+|name|type|
+|id|string|
+
+This method takes an id and deletes the corresponding session.
+
+#### isValidId (public)
+
+|name|type|
+|id|string|
+
+This method takes an id and checkes if there is a session saved with that id.
+
+#### getSession (public)
+
+|name|type|
+|id|string|
+
+This method takes an id and returns the information that is saved under this id.
