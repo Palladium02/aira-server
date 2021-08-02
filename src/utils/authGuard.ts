@@ -15,11 +15,11 @@ const authGuard = ({ req, res, accepted, declined }: authGuardOptions) => {
   if(!req.body) req['body'] = {};
 
   if(!sessionCookie) {
-    if (!authentication.isValidId(sessionToken)) declined(req, res);
+    if (!authentication.isValidId(sessionToken)) { declined(req, res); return; };
   } else if(sessionCookie) {
-    if (!authentication.isValidId(sessionCookie)) declined(req, res);
+    if (!authentication.isValidId(sessionCookie)) { declined(req, res); return; };
   } else {
-    if (!authentication.isValidId(sessionToken)) declined(req, res);
+    if (!authentication.isValidId(sessionToken)) { declined(req, res); return; };
   }
 
   if(sessionCookie) {

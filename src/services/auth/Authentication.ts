@@ -55,7 +55,7 @@ class Authentication {
     return this.sessions.has(id);
   }
 
-  public getSession(id: string): Session {
+  public getSession(id: string) {
     return this.sessions.get(id);
   }
 }

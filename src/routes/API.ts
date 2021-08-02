@@ -8,7 +8,9 @@ import Auth from './Auth';
 const API: IRouter = express.Router();
 const driver: Driver = new Driver(process.env.ROOT_DIR!);
 
+// @ts-ignore
 API.use(express.json());
+// @ts-ignore
 API.use(express.urlencoded({ extended: false }));
 
 API.post('/find', (req: Request, res: Response) => {
@@ -136,7 +138,7 @@ API.post('/getUserInfo', (req: Request, res: Response) => {
     req,
     res,
     accepted: (req: Request, res: Response) => {
-      let session: Session = authentication.getSession(req.body.id);
+      let session = authentication.getSession(req.body.id);
 
       res.send(session);
     },

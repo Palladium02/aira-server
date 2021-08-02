@@ -1,12 +1,11 @@
 import EventEmitter from 'events';
-
 class Session {
   email: string;
   username: string;
   id: string;
   emitter: EventEmitter;
 
-  constructor({ email, username, id, emitter }) {
+  constructor({ email, username, id, emitter }: any) {
     this.email = email;
     this.username = username;
     this.id = id;
