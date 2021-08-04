@@ -4,7 +4,9 @@ import authGuard from '../utils/authGuard';
 
 const Auth: IRouter = express.Router();
 
+// @ts-ignore
 Auth.use(express.json());
+// @ts-ignore
 Auth.use(express.urlencoded({ extended: false }));
 
 Auth.post('/weblogin', (req: Request, res: Response) => {
@@ -46,7 +48,7 @@ Auth.post('/clientlogin', (req: Request, res: Response) => {
   }
 });
 
-Auth.get('/isAuth', (req: Request, res: Response) => {
+Auth.post('/isAuth', (req: Request, res: Response) => {
   authGuard({
     req,
     res,
