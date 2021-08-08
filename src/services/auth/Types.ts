@@ -14,7 +14,7 @@ export interface SessionInfo {
 export interface LoginResponse {
   id: string | null;
   error: {
-    description: string,
-    date: number
-  } | null
+    description: string;
+    date: number;
+  } | null;
 }

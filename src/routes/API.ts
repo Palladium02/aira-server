@@ -1,7 +1,7 @@
-import express, { Request, Response, IRouter } from 'express';
-import Driver from '../services/driver/Driver';
-import authentication from '../services/auth/Authentication';
-import authGuard from '../utils/authGuard';
+import express, { Request, Response, IRouter } from "express";
+import Driver from "../services/driver/Driver";
+import authentication from "../services/auth/Authentication";
+import authGuard from "../utils/authGuard";
 
 const API: IRouter = express.Router();
 const driver: Driver = new Driver(process.env.ROOT_DIR!);
@@ -11,7 +11,7 @@ API.use(express.json());
 // @ts-ignore
 API.use(express.urlencoded({ extended: false }));
 
-API.post('/find', (req: Request, res: Response) => {
+API.post("/find", (req: Request, res: Response) => {
   authGuard({
     req,
     res,
@@ -25,13 +25,13 @@ API.post('/find', (req: Request, res: Response) => {
     declined: (req: Request, res: Response) => {
       res.send({
         result: [],
-        error: ''
+        error: "",
       });
-    }
+    },
   });
 });
 
-API.post('/findOne', (req: Request, res: Response) => {
+API.post("/findOne", (req: Request, res: Response) => {
   authGuard({
     req,
     res,
@@ -45,13 +45,13 @@ API.post('/findOne', (req: Request, res: Response) => {
     declined: (req: Request, res: Response) => {
       res.send({
         result: [],
-        error: ''
+        error: "",
       });
-    }
+    },
   });
 });
 
-API.post('/insert', (req: Request, res: Response) => {
+API.post("/insert", (req: Request, res: Response) => {
   authGuard({
     req,
     res,
@@ -65,34 +65,34 @@ API.post('/insert', (req: Request, res: Response) => {
     declined: (req: Request, res: Response) => {
       res.send({
         success: false,
-        error: ''
+        error: "",
       });
-    }
+    },
   });
 });
 
-API.post('/update', (req: Request, res: Response) => {
+API.post("/update", (req: Request, res: Response) => {
   authGuard({
     req,
     res,
     accepted: (req: Request, res: Response) => {
       let query = req.body.query;
-    	let update = req.body.update;
-    	let databaseName: string = req.body.databaseName;
-      	
-    	let result = driver.update(query, update, databaseName);
-    	res.send(result);
+      let update = req.body.update;
+      let databaseName: string = req.body.databaseName;
+
+      let result = driver.update(query, update, databaseName);
+      res.send(result);
     },
     declined: (req: Request, res: Response) => {
       res.send({
         success: false,
-        error: ''
+        error: "",
       });
-    }
+    },
   });
 });
 
-API.post('/deleteEntry', (req: Request, res: Response) => {
+API.post("/deleteEntry", (req: Request, res: Response) => {
   authGuard({
     req,
     res,
@@ -106,13 +106,13 @@ API.post('/deleteEntry', (req: Request, res: Response) => {
     declined: (req: Request, res: Response) => {
       res.send({
         success: false,
-        error: ''
+        error: "",
       });
-    }
+    },
   });
 });
 
-API.post('/dropTable', (req: Request, res: Response) => {
+API.post("/dropTable", (req: Request, res: Response) => {
   authGuard({
     req,
     res,
@@ -125,13 +125,13 @@ API.post('/dropTable', (req: Request, res: Response) => {
     declined: (req: Request, res: Response) => {
       res.send({
         success: false,
-        error: ''
+        error: "",
       });
-    }
+    },
   });
 });
 
-API.get('/getUserInfo', (req: Request, res: Response) => {
+API.get("/getUserInfo", (req: Request, res: Response) => {
   authGuard({
     req,
     res,
@@ -142,11 +142,11 @@ API.get('/getUserInfo', (req: Request, res: Response) => {
     },
     declined: (req: Request, res: Response) => {
       res.send({});
-    }
+    },
   });
 });
 
-API.get('/getTotalStorageUsage', (req: Request, res: Response) => {
+API.get("/getTotalStorageUsage", (req: Request, res: Response) => {
   authGuard({
     req,
     res,
@@ -157,12 +157,12 @@ API.get('/getTotalStorageUsage', (req: Request, res: Response) => {
 
       res.send({
         bytes: sizeOfAllTables,
-        tables: getAmountOfTables.length
+        tables: getAmountOfTables.length,
       });
     },
     declined: (req: Request, res: Response) => {
       res.send({});
-    }
+    },
   });
 });
 

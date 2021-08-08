@@ -294,18 +294,23 @@ class Driver {
   }
 
   public dropTable(tableName: string): DatabaseDropTableResponse {
-    if(fs.existsSync(`${this.rootFolder}/${tableName}`)) {
+    if (fs.existsSync(`${this.rootFolder}/${tableName}`)) {
       fs.rmdirSync(`${this.rootFolder}/${tableName}`);
       return { success: true, error: null };
     } else {
-      return { success: false, error: new DatabaseError(`Table not found. There is no table named ${tableName} in the database.`) }
+      return {
+        success: false,
+        error: new DatabaseError(
+          `Table not found. There is no table named ${tableName} in the database.`
+        ),
+      };
     }
   }
 
   public getTableNames(username: string): string[] {
     let tables: string[] = fs.readdirSync(`${this.rootFolder}/${username}`);
     tables = tables.filter((value) => {
-      if(value !== 'meta.json') return value; 
+      if (value !== "meta.json") return value;
     });
     return tables;
   }
@@ -314,14 +319,18 @@ class Driver {
     let tables: string[] = this.getTableNames(username);
     let accumulatedSize: number = 0;
 
-    tables.forEach(table => {
-      let files: string[] = fs.readdirSync(`${this.rootFolder}/${username}/${table}`);
+    tables.forEach((table) => {
+      let files: string[] = fs.readdirSync(
+        `${this.rootFolder}/${username}/${table}`
+      );
       files = files.filter((value) => {
-        if(value !== 'schema.json') return value;
+        if (value !== "schema.json") return value;
       });
-      
-      files.forEach(file => {
-        let size: number = fs.statSync(`${this.rootFolder}/${username}/${table}/${file}`).size;
+
+      files.forEach((file) => {
+        let size: number = fs.statSync(
+          `${this.rootFolder}/${username}/${table}/${file}`
+        ).size;
         accumulatedSize = accumulatedSize + size;
       });
     });
