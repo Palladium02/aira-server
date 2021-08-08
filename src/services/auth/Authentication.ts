@@ -1,8 +1,8 @@
-import EventEmitter from 'events';
-import isEmpty from '../../utils/isEmpty';
-import Driver from '../driver/Driver';
-import Session from './Session';
-import { SessionInfo, LoginResponse } from './Types';
+import EventEmitter from "events";
+import isEmpty from "../../utils/isEmpty";
+import Driver from "../driver/Driver";
+import Session from "./Session";
+import { SessionInfo, LoginResponse } from "./Types";
 
 class Authentication {
   private driver: Driver;
@@ -16,7 +16,7 @@ class Authentication {
     this.sessions = new Map();
     this.emitter = new EventEmitter();
 
-    this.emitter.addListener('delete', (data: SessionInfo) => {
+    this.emitter.addListener("delete", (data: SessionInfo) => {
       this.sessions.delete(data.id);
     });
   }
@@ -25,26 +25,34 @@ class Authentication {
     let { result, error } = this.driver.find(
       {
         email,
-      }, 
+      },
       this.userTableName,
       true
     );
-    if(error) return { id: null, error: { description: '', date: Date.now() } };
-    if(isEmpty(result)) return { id: null, error: { description: '', date: Date.now() } };
+    if (error)
+      return { id: null, error: { description: "database", date: Date.now() } };
+    if (isEmpty(result))
+      return {
+        id: null,
+        error: { description: "no result", date: Date.now() },
+      };
 
-    if(password === result[0]!.password) {
+    if (password === result[0]!.password) {
       let sessionId: string = `${Date.now()}${Math.random()}`;
       let session: Session = new Session({
         email: result[0].email,
         username: result[0].username,
         id: sessionId,
-        emitter: this.emitter
+        emitter: this.emitter,
       });
 
       this.sessions.set(sessionId, session);
       return { id: sessionId, error: null };
     }
-    return { id: null, error: { description: '', date: Date.now() } };
+    return {
+      id: null,
+      error: { description: "wrong password", date: Date.now() },
+    };
   }
 
   public logout(id: string): void {
@@ -60,5 +68,8 @@ class Authentication {
   }
 }
 
-const authentication: Authentication = new Authentication(process.env.ROOT_DIR!, 'aira/user');
+const authentication: Authentication = new Authentication(
+  process.env.ROOT_DIR!,
+  "aira/user"
+);
 export default authentication;
