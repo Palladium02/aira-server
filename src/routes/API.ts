@@ -2,8 +2,6 @@ import express, { Request, Response, IRouter } from 'express';
 import Driver from '../services/driver/Driver';
 import authentication from '../services/auth/Authentication';
 import authGuard from '../utils/authGuard';
-import Session from '../services/auth/Session';
-import Auth from './Auth';
 
 const API: IRouter = express.Router();
 const driver: Driver = new Driver(process.env.ROOT_DIR!);
@@ -133,7 +131,7 @@ API.post('/dropTable', (req: Request, res: Response) => {
   });
 });
 
-API.post('/getUserInfo', (req: Request, res: Response) => {
+API.get('/getUserInfo', (req: Request, res: Response) => {
   authGuard({
     req,
     res,
@@ -148,7 +146,7 @@ API.post('/getUserInfo', (req: Request, res: Response) => {
   });
 });
 
-API.post('/getTotalStorageUsage', (req: Request, res: Response) => {
+API.get('/getTotalStorageUsage', (req: Request, res: Response) => {
   authGuard({
     req,
     res,
@@ -168,4 +166,4 @@ API.post('/getTotalStorageUsage', (req: Request, res: Response) => {
   });
 });
 
-export default Auth;
+export default API;
